@@ -16,6 +16,9 @@ class OptionType(models.TextChoices):
 class Option(BaseModel):
     title = models.CharField(max_length=256)  # Марка и модель, Кузов , Объём двигателя
     type = models.CharField(max_length=15, choices=OptionType.choices)
+    code = models.CharField(
+        max_length=256, null=True, blank=True
+    )  # year, bargain,auto_car_transm,auto-run
 
     is_main = models.BooleanField(default=False)
     is_filter = models.BooleanField(default=False)
@@ -67,6 +70,9 @@ class PostOptionValue(BaseModel):
         PostOption, on_delete=models.CASCADE, related_name="values"
     )
     option_value = models.ForeignKey(OptionValue, on_delete=models.CASCADE)
+    option_value_extended = models.ForeignKey(
+        OptionValueExtended, on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     class Meta:
         unique_together = ("post_option", "option_value")

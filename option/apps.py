@@ -2,5 +2,8 @@ from django.apps import AppConfig
 
 
 class OptionConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'option'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "option"
+
+    def ready(self):
+        import option.signals
