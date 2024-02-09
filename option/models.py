@@ -64,6 +64,47 @@ class PostOption(BaseModel):
     def __str__(self):
         return f"{self.post} {self.option}"
 
+    @classmethod
+    def generate_json_options(cls, post_id):
+        data = {"year": None, "model": None, "options": []}
+        post_options = (
+            cls.objects.filter(post_id=post_id)
+            .order_by("option__order")
+            .select_related(
+                "option",
+            )
+            .prefetch_related("values")
+            .prefetch_related(
+                "values", "values__option_value", "values__option_value_extended"
+            )
+        )
+        for post_option in post_options:
+            data["options"].append(
+                {
+                    "title": post_option.option.title,
+                    "value": post_option.value,
+                    "values": [
+                        values.option_value.value for values in post_option.values.all()
+                    ],
+                }
+            )
+            if post_option.option.code == "year":
+                data["year"] = post_option.value
+            if post_option.option.code == "model":
+                for value in post_option.values.all():
+                    if value.option_value_extended:
+                        if value.option_value_extended.parent:
+                            data["model"] = (
+                                f"{value.option_value.value} {value.option_value_extended.parent.value}, {value.option_value_extended.value}"
+                            )
+                        else:
+                            data["model"] = (
+                                f"{value.option_value.value} {value.option_value_extended.value}"
+                            )
+                    else:
+                        data["model"] = value.option_value.value
+        return data
+
 
 class PostOptionValue(BaseModel):
     post_option = models.ForeignKey(

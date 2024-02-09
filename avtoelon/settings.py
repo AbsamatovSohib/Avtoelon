@@ -40,11 +40,13 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "drf_spectacular",
+    "debug_toolbar",
     "avto",
     "option",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "querycount.middleware.QueryCountMiddleware",
 ]
 
 ROOT_URLCONF = "avtoelon.urls"
@@ -152,3 +155,10 @@ SPECTACULAR_SETTINGS = {
 
 
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
+
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]

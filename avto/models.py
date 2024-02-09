@@ -1,5 +1,6 @@
 from django.db import models
 from utils.models import BaseModel
+from option.models import PostOption
 
 
 class Region(BaseModel):
@@ -61,9 +62,8 @@ class Post(BaseModel):
 
     def __str__(self):
         return self.info
-        
+
     def make_json_fields(self):
-        post_options = self.options.all()
         data = {
             "title": "",
             "extended_title": "",
@@ -73,33 +73,7 @@ class Post(BaseModel):
             "photos_count": 0,
             "options": [],
         }
-        for post_option in post_options:
-            data["options"].append(
-                {
-                    "title": post_option.option.title,
-                    "value": post_option.value,
-                    "values": [
-                        values.option_value.value for values in post_option.values.all()
-                    ],
-                }
-            )
-            if post_option.option.code == "year":
-                data["year"] = post_option.value
-            if post_option.option.code == "model":
-                for value in post_option.values.all():
-                    if value.option_value_extended:
-                        parent = ""
-                        if value.option_value_extended.parent:
-                            data["model"] = (
-                                f"{value.option_value.value} {value.option_value_extended.parent.value}, {value.option_value_extended.value}"
-                            )
-                        else:
-                            data["model"] = (
-                                f"{value.option_value.value} {value.option_value_extended.value}"
-                            )
-                    else:
-                        data["model"] = value.option_value.value
-
+        data.update(**PostOption.generate_json_options(self.id))
         data["district"] = self.district.title
         data["photos_count"] = self.photos.count()
         data["title"] = f"{data['model']}"
