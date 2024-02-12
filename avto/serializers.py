@@ -49,4 +49,11 @@ class StatisticBuyCarSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = District
-        fields = ['id', 'name', 'post_count']
+        fields = [ 'name', 'post_count']
+
+
+class PostFilterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Post
+        

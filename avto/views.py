@@ -19,11 +19,11 @@ class StatisticBuyCarView(generics.ListAPIView):
     serializer_class =StatisticBuyCarSerializer
     
     def get(self, request):
-        regions = District.objects.annotate(post_count=Count('posts'))
+        districts = District.objects.annotate(post_count=Count('posts'))
         data = [
             {
-            'region_name': region.title,
-            'post_count': region.post_count
-        } for region in regions
+            'region_name': district.title,
+            'post_count': district.post_count
+        } for district in districts
         ]
         return Response(data)
